@@ -1,0 +1,92 @@
+project:
+  name: automated_shelterbelt_inventory
+  description: Automated inventory and quality assessment of protective forest belts.
+
+target_object:
+  name: protective_forest_belt
+  min_width_m: 2
+  max_width_m: 60
+  geometry:
+    primary: Polygon
+    secondary: LineString
+  orientation: any
+  expected_structure:
+    - single_row
+    - multi_row
+    - continuous_linear_belt
+    - fragmented_linear_belt
+  species_composition:
+    required: false
+    note: Store as an attribute when field or reference data is available.
+
+quality_metrics:
+  structural:
+    - width_m
+    - crown_closure_pct
+    - continuity_idx
+    - gap_share_pct
+    - dry_share_pct
+    - debris_or_litter_presence
+    - height_m
+  sanitary_functional:
+    - mean_ndvi
+    - ndvi_status
+    - degradation_or_decay_presence
+    - drying_presence
+    - illegal_logging_signal
+
+quality_rules:
+  note: Initial pilot thresholds; calibrate with reference polygons and field observations.
+  good:
+    crown_closure_pct_min: 70
+    mean_ndvi_min: 0.55
+    continuity_idx_min: 0.85
+    gap_share_pct_max: 10
+    dry_share_pct_max: 10
+  satisfactory:
+    crown_closure_pct_min: 40
+    crown_closure_pct_max: 70
+    mean_ndvi_min: 0.35
+    mean_ndvi_max: 0.55
+    continuity_idx_min: 0.60
+    continuity_idx_max: 0.85
+    gap_share_pct_min: 10
+    gap_share_pct_max: 30
+    dry_share_pct_max: 25
+  poor:
+    crown_closure_pct_max: 40
+    mean_ndvi_max: 0.35
+    continuity_idx_max: 0.60
+    gap_share_pct_min: 30
+    dry_share_pct_min: 25
+
+coordinates:
+  exchange_crs: EPSG:4326
+  metric_crs: UTM
+  accuracy: not_worse_than_source_pixel_planimetric_accuracy
+  validate_geometry: true
+
+output:
+  formats:
+    - GeoJSON
+    - GeoPackage
+  required_attributes:
+    - belt_id
+    - geometry_type
+    - width_m
+    - crown_closure_pct
+    - continuity_idx
+    - mean_ndvi
+    - dry_share_pct
+    - gap_share_pct
+    - quality_class
+    - quality_factors
+    - image_date
+    - source
+    - crs
+
+monitoring_scope:
+  pilot_area: one_test_district_or_set_of_agricultural_contours
+  preferred_season: vegetation_peak
+  update_frequency: annual_or_on_new_cloud_free_scene
+  historical_retrospective_min_periods: 2
